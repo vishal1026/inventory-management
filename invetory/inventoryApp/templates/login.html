@@ -6,7 +6,7 @@
       <div class="card-body">
           {% if invalidcredential %}
           <div class="alert alert-danger">
-              Invalid username or password.
+              Invalid user_name or password.
           </div>
         {% endif%}
         {% if userRegisteredSuccessfully %}
@@ -16,8 +16,8 @@
         {% endif%}
         <form action="/inventoryApp/login/" method="POST">{% csrf_token %}
           <div class="form-group">
-            <label for="userName">Username:</label>
-            <input type="text" class="form-control form-control-sm" id="userName" placeholder="Enter username" name="userName" required>
+            <label for="user_name">user_name:</label>
+            <input type="text" class="form-control form-control-sm" id="user_name" placeholder="Enter user_name" name="user_name" required>
           </div>
           <div class="form-group">
             <label for="password">Password:</label>
