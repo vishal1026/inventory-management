@@ -9,11 +9,21 @@ def index(request):
     return render(request, 'login.html')
 
 def register(request):
+    request
     if request.method == 'GET':
-        return render(request, 'register.html')
+        return render(request, 'register.html', {'userExist':False})
     if request.method == 'POST':
-        return HttpResponse("User exist")
-    return HttpResponse("Last")
+        try:
+            result = Inventory_users.objects.get(user_name=request.POST['userName'])
+            return render(request, 'register.html', {'userExist':True})
+        except:
+            newUser = Inventory_users()
+            newUser.first_name=request.POST['userName']
+            newUser.last_name=request.POST['userName']
+            newUser.user_name=request.POST['userName']
+            newUser.password=request.POST['password']
+            newUser.save()
+    return render(request, 'login.html',{'userRegisteredSuccessfully':True, 'userExist':False})
 
 
 @csrf_protect

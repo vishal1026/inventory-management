@@ -1,12 +1,17 @@
 {% extends "base.html" %}
-{% block title %} Login | inventoryApp {% endblock %}
+{% block title %} inventoryApp | Login {% endblock %}
 {% block content %}
-  <div class="container mx-auto mt-5"  style="width: 400px;">
+  <div class="mx-auto mt-5"  style="width: 400px;">
     <div class="card bg-light text-dark">
       <div class="card-body">
-        {% if invalidcredential %}
+          {% if invalidcredential %}
           <div class="alert alert-danger">
               Invalid username or password.
+          </div>
+        {% endif%}
+        {% if userRegisteredSuccessfully %}
+          <div class="alert alert-success">
+            <strong>Registered Successfully!</strong>  login to continue
           </div>
         {% endif%}
         <form action="/inventoryApp/login/" method="POST">{% csrf_token %}
