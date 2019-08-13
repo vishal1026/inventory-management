@@ -35,9 +35,12 @@ def login(request):
                 request.session['user_id'] = result.user_id
                 request.session['user_name'] = result.user_name
                 request.session['user_type'] = result.user_type
+                if result.user_type == 'admin':
+                    productList = Products.objects.all()
+                    return render(request,'profile/admin/adminProfile.html', {'productList':productList})
         except Inventory_users.DoesNotExist:
             return render(request, 'login.html',{'invalidcredential':True})
-    return render(request,'profile/adminProfile.html')
+    return render(request,'profile/user/userProfile.html')
 
 def productOperations(request):
     if request.method == 'POST':
