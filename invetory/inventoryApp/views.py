@@ -9,9 +9,14 @@ def index(request):
     return render(request, 'login.html')
 
 def register(request):
+    request
     if request.method == 'GET':
-        return render(request, 'register.html')
+        return render(request, 'register.html', {'userExist':False})
     if request.method == 'POST':
+        result = Inventory_users.objects.get(user_name=request.POST['userName'])
+        # print result
+        if result:
+            return render(request, 'register.html', {'userExist':True})
         return HttpResponse("User exist")
     return HttpResponse("Last")
 
