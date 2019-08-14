@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth import logout
 from django.shortcuts import render
 from models import *
 
@@ -9,7 +10,6 @@ def index(request):
     return render(request, 'login.html')
 
 def register(request):
-    request
     if request.method == 'GET':
         return render(request, 'register.html', {'userExist':False})
     if request.method == 'POST':
@@ -28,6 +28,9 @@ def register(request):
 
 @csrf_protect
 def login(request):
+    if 'user_id' in request.session and request.session['user_id']:
+        return HttpResponseRedirect('/inventoryApp/profile/')
+
     if request.method == 'POST':
         try:
             result = Inventory_users.objects.get(user_name=request.POST['user_name'], password=request.POST['password'])
@@ -35,13 +38,24 @@ def login(request):
                 request.session['user_id'] = result.user_id
                 request.session['user_name'] = result.user_name
                 request.session['user_type'] = result.user_type
-                if result.user_type == 'admin':
-                    productList = Products.objects.all()
-                    return render(request,'profile/admin/adminProfile.html', {'productList':productList})
+                return HttpResponseRedirect('/inventoryApp/profile/')
         except Inventory_users.DoesNotExist:
             return render(request, 'login.html',{'invalidcredential':True})
+    return render(request, 'login.html',{'invalidcredential':False})
+
+
+def logoutUser(request):
+    logout(request)
+    return HttpResponseRedirect('/inventoryApp/')
+
+
+def profile(request):
+    if request.session['user_type'] == 'admin':
+        productList = Products.objects.all()
+        return render(request,'profile/admin/adminProfile.html', {'productList':productList})
     productList = Products.objects.exclude(quantity__lte = 0)
     return render(request,'profile/user/userProfile.html', {'productList':productList})
+
 
 def productOperations(request):
     if request.method == 'POST':
@@ -49,7 +63,8 @@ def productOperations(request):
         newProduct.product_name = request.POST['product_name']
         newProduct.quantity = int(request.POST['quantity'])
         newProduct.save()
-        return render(request,'login.html')
+        return HttpResponseRedirect('/inventoryApp/profile/')
+
 
 @csrf_protect
 def productPurchase(request):
@@ -62,4 +77,4 @@ def productPurchase(request):
         newPurchase.save()
         purchasedProduct.quantity = purchasedProduct.quantity - int(request.POST['quantity'])
         purchasedProduct.save()
-        return render(request,'login.html')
+        return HttpResponseRedirect('/inventoryApp/profile/')
