@@ -24,7 +24,8 @@
 				</thead>
 				<tbody>
 					{% for product in productList%}
-					<tr id="{{ product.product_id }}"  quantity = "{{ product.quantity }}" onmouseenter="addPurchaseButton(this,'{{ product.quantity }}')" onmouseleave="removePurchaseButton(this)">
+					<tr id="{{ product.product_id }}" quantity="{{ product.quantity }}"
+						onmouseenter="addPurchaseButton(this,'{{ product.quantity }}')" onmouseleave="removePurchaseButton(this)">
 						<td scope="row">{{ product.product_id }}</td>
 						<td>{{ product.product_name }}</td>
 						<td>{{ product.quantity }}</td>
@@ -65,19 +66,34 @@
 	</div>
 </div>
 <script>
-	function getPurchaseItem(row){
-		console.log("getPurchaseItem",row);
-		console.log("Value",document.getElementById("purchaseQuantity"+row.id).value);
-		
+	function getPurchaseItem(row) {
+		console.log("getPurchaseItem", row);
+		console.log("Value", document.getElementById("purchaseQuantity" + row.id).value);
+		var product_id = row.id;
+		var quantity = document.getElementById("purchaseQuantity" + row.id).value;
+		$.ajax({
+			type: 'POST',
+			url: "http://localhost:8000/inventoryApp/productPurchase/ ",
+			data: {
+				'csrfmiddlewaretoken': '{{ csrf_token }}',
+				'product_id': product_id,
+				'quantity': quantity
+			},
+			success: function (deptList) {
+				console.log(deptList)
+				window.location.reload();
+			}
+		});
 	}
-	function addPurchaseButton(row,quantity) {
+
+	function addPurchaseButton(row, quantity) {
 		var inputTD = document.createElement("TD");
 		var input = document.createElement("INPUT");
 		var att = document.createAttribute("TYPE");
 		att.value = "number"
 		input.setAttributeNode(att);
 		att = document.createAttribute("id");
-		att.value = "purchaseQuantity"+row.id;
+		att.value = "purchaseQuantity" + row.id;
 		input.setAttributeNode(att);
 
 		att = document.createAttribute("MAX");
@@ -104,7 +120,7 @@
 		att.value = quantity;
 		button.setAttributeNode(att);
 
-		button.setAttribute('onclick','getPurchaseItem(this);');
+		button.setAttribute('onclick', 'getPurchaseItem(this);');
 		buttonTD.appendChild(button);
 
 		document.getElementById(row.id).appendChild(inputTD);
@@ -113,8 +129,8 @@
 
 	function removePurchaseButton(row) {
 		var list = document.getElementById(row.id);
-		list.removeChild(list.childNodes[list.childNodes.length-1]);
-		list.removeChild(list.childNodes[list.childNodes.length-1]);
+		list.removeChild(list.childNodes[list.childNodes.length - 1]);
+		list.removeChild(list.childNodes[list.childNodes.length - 1]);
 	}
 </script>
 {% endblock %}

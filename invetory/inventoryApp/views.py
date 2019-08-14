@@ -51,15 +51,15 @@ def productOperations(request):
         newProduct.save()
         return render(request,'login.html')
 
-
+@csrf_protect
 def productPurchase(request):
     if request.method == 'POST':
+        purchasedProduct = Products.objects.get(product_id = request.POST['product_id'])
         newPurchase = Purchase()
-        newPurchase.product_id = request.POST['product_id']
-        newPurchase.user_id = request.session['user_id']
+        newPurchase.product_id = purchasedProduct
+        newPurchase.user_id = Inventory_users.objects.get( user_id = request.session['user_id'] )
         newPurchase.quantity = int(request.POST['quantity'])
         newPurchase.save()
-        purchasedProduct = Products.objects.get(product_id = request.POST['product_id'])
         purchasedProduct.quantity = purchasedProduct.quantity - int(request.POST['quantity'])
         purchasedProduct.save()
         return render(request,'login.html')
