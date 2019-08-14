@@ -10,7 +10,6 @@ def index(request):
     return render(request, 'login.html')
 
 def register(request):
-    request
     if request.method == 'GET':
         return render(request, 'register.html', {'userExist':False})
     if request.method == 'POST':
@@ -29,8 +28,6 @@ def register(request):
 
 @csrf_protect
 def login(request):
-    print request.session.keys()
-    print request.session.values()
     if 'user_id' in request.session and request.session['user_id']:
         return HttpResponseRedirect('/inventoryApp/profile/')
 
@@ -66,7 +63,8 @@ def productOperations(request):
         newProduct.product_name = request.POST['product_name']
         newProduct.quantity = int(request.POST['quantity'])
         newProduct.save()
-        return render(request,'login.html')
+        return HttpResponseRedirect('/inventoryApp/profile/')
+
 
 @csrf_protect
 def productPurchase(request):
@@ -79,4 +77,4 @@ def productPurchase(request):
         newPurchase.save()
         purchasedProduct.quantity = purchasedProduct.quantity - int(request.POST['quantity'])
         purchasedProduct.save()
-        return render(request,'login.html')
+        return HttpResponseRedirect('/inventoryApp/profile/')

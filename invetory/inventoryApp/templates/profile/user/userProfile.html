@@ -2,12 +2,15 @@
 {% block title %} inventoryApp | User {% endblock %}
 {% block content %}
 <div class="mx-auto mt-5">
+	<div class="float-right">
+			<a  href="/inventoryApp/logoutUser/" class="btn btn-link">Logout</a>
+	</div>
 	<nav>
 		<div class="nav nav-tabs" id="nav-tab" role="tablist">
 			<a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
 				aria-controls="nav-home" aria-selected="true">Home</a>
-			<a class="nav-item nav-link" id="nav-history-tab" data-toggle="tab" href="#nav-history" role="tab"
-				aria-controls="nav-history" aria-selected="false">History</a>
+			<!-- <a class="nav-item nav-link" id="nav-history-tab" data-toggle="tab" href="#nav-history" role="tab"
+				aria-controls="nav-history" aria-selected="false">History</a> -->
 		</div>
 	</nav>
 	<!-- Home div -->
@@ -67,8 +70,6 @@
 </div>
 <script>
 	function getPurchaseItem(row) {
-		console.log("getPurchaseItem", row);
-		console.log("Value", document.getElementById("purchaseQuantity" + row.id).value);
 		var product_id = row.id;
 		var quantity = document.getElementById("purchaseQuantity" + row.id).value;
 		$.ajax({
@@ -80,7 +81,6 @@
 				'quantity': quantity
 			},
 			success: function (response) {
-				console.log(response)
 				window.location.reload();
 			}
 		});
