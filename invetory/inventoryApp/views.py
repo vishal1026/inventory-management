@@ -40,7 +40,8 @@ def login(request):
                     return render(request,'profile/admin/adminProfile.html', {'productList':productList})
         except Inventory_users.DoesNotExist:
             return render(request, 'login.html',{'invalidcredential':True})
-    return render(request,'profile/user/userProfile.html')
+    productList = Products.objects.exclude(quantity__lte = 0)
+    return render(request,'profile/user/userProfile.html', {'productList':productList})
 
 def productOperations(request):
     if request.method == 'POST':
@@ -48,4 +49,17 @@ def productOperations(request):
         newProduct.product_name = request.POST['product_name']
         newProduct.quantity = int(request.POST['quantity'])
         newProduct.save()
+        return render(request,'login.html')
+
+
+def productPurchase(request):
+    if request.method == 'POST':
+        newPurchase = Purchase()
+        newPurchase.product_id = request.POST['product_id']
+        newPurchase.user_id = request.session['user_id']
+        newPurchase.quantity = int(request.POST['quantity'])
+        newPurchase.save()
+        purchasedProduct = Products.objects.get(product_id = request.POST['product_id'])
+        purchasedProduct.quantity = purchasedProduct.quantity - int(request.POST['quantity'])
+        purchasedProduct.save()
         return render(request,'login.html')

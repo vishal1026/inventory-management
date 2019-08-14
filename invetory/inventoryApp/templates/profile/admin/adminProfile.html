@@ -42,11 +42,6 @@
 				<div class="mx-auto mt-5" style="width: 400px;">
 				<div class="card bg-light text-dark">
 					<div class="card-body">
-							{% if userExist %}
-								<div class="alert alert-danger">
-										user_name already exist.
-								</div>
-							{% endif%}
 						<form name="addProduct" action="/inventoryApp/productOperations/" method="POST">{% csrf_token %}
 							<div class="form-group">
 								<label for="product_name">Product name:</label>

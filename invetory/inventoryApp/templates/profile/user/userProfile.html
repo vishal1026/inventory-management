@@ -6,50 +6,115 @@
 		<div class="nav nav-tabs" id="nav-tab" role="tablist">
 			<a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
 				aria-controls="nav-home" aria-selected="true">Home</a>
-			<a class="nav-item nav-link" id="nav-addProduct-tab" data-toggle="tab" href="#nav-addProduct" role="tab"
-				aria-controls="nav-addProduct" aria-selected="false">Add Product</a>
-			<a class="nav-item nav-link" id="nav-updateProduct-tab" data-toggle="tab" href="#nav-updateProduct" role="tab"
-				aria-controls="nav-updateProduct" aria-selected="false">Update Product</a>
+			<a class="nav-item nav-link" id="nav-history-tab" data-toggle="tab" href="#nav-history" role="tab"
+				aria-controls="nav-history" aria-selected="false">History</a>
 		</div>
 	</nav>
 	<!-- Home div -->
 	<div class="tab-content" id="nav-tabContent">
 		<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-			{% block homeContent %}{% endblock %}
+			{% if productList %}
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th scope="col">Product Id</th>
+						<th scope="col">Name</th>
+						<th scope="col">Available Quantity</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for product in productList%}
+					<tr id="{{ product.product_id }}"  quantity = "{{ product.quantity }}" onmouseenter="addPurchaseButton(this,'{{ product.quantity }}')" onmouseleave="removePurchaseButton(this)">
+						<td scope="row">{{ product.product_id }}</td>
+						<td>{{ product.product_name }}</td>
+						<td>{{ product.quantity }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			{% endif %}
 		</div>
 
 		<!-- Add product div -->
-		<div class="tab-pane fade" id="nav-addProduct" role="tabpanel" aria-labelledby="nav-addProduct-tab">
-				<div class="mx-auto mt-5" style="width: 400px;">
+		<div class="tab-pane fade" id="nav-history" role="tabpanel" aria-labelledby="nav-history-tab">
+			<div class="mx-auto mt-5" style="width: 400px;">
 				<div class="card bg-light text-dark">
 					<div class="card-body">
-							{% if userExist %}
-								<div class="alert alert-danger">
-										user_name already exist.
-								</div>
-							{% endif%}
-						<form name="addProduct" action="/inventoryApp/productOperations/" method="POST">{% csrf_token %}
+						{% if userExist %}
+						<div class="alert alert-danger">
+							user_name already exist.
+						</div>
+						{% endif%}
+						<form name="history" action="/inventoryApp/productOperations/" method="POST">{% csrf_token %}
 							<div class="form-group">
 								<label for="product_name">Product name:</label>
-								<input type="text" class="form-control" id="product_name" placeholder="Enter Product name" name="product_name"
-									required>
+								<input type="text" class="form-control" id="product_name" placeholder="Enter Product name"
+									name="product_name" required>
 							</div>
 							<div class="form-group">
 								<label for="quantity">Quantity:</label>
-								<input type="Number" class="form-control" value=10 id="quantity" placeholder="Enter quantity" name="quantity"
-									required>
+								<input type="Number" class="form-control" value=10 id="quantity" placeholder="Enter quantity"
+									name="quantity" required>
 							</div>
-								<button type="submit" class="btn btn-primary btn-block">Add product</button>
+							<button type="submit" class="btn btn-primary btn-block">Add product</button>
 						</form>
 					</div>
 				</div>
 			</div>
 		</div>
-
-		<!-- Update Product div -->
-		<div class="tab-pane fade" id="nav-updateProduct" role="tabpanel" aria-labelledby="nav-updateProduct-tab">
-			{% block updateProduct %}{% endblock %}
-		</div>
 	</div>
 </div>
+<script>
+	function getPurchaseItem(row){
+		console.log("getPurchaseItem",row);
+		console.log("Value",document.getElementById("purchaseQuantity"+row.id).value);
+		
+	}
+	function addPurchaseButton(row,quantity) {
+		var inputTD = document.createElement("TD");
+		var input = document.createElement("INPUT");
+		var att = document.createAttribute("TYPE");
+		att.value = "number"
+		input.setAttributeNode(att);
+		att = document.createAttribute("id");
+		att.value = "purchaseQuantity"+row.id;
+		input.setAttributeNode(att);
+
+		att = document.createAttribute("MAX");
+		att.value = quantity;
+		input.setAttributeNode(att);
+		att = document.createAttribute("MIN");
+		att.value = 1;
+		input.setAttributeNode(att);
+		att = document.createAttribute("VALUE");
+		att.value = 1;
+		input.setAttributeNode(att);
+		inputTD.appendChild(input);
+
+		var buttonTD = document.createElement("TD");
+		var button = document.createElement("BUTTON");
+		button.innerHTML = "Purchase";
+		att = document.createAttribute("class");
+		att.value = "btn btn-primary";
+		button.setAttributeNode(att);
+		att = document.createAttribute("id");
+		att.value = row.id;
+		button.setAttributeNode(att);
+		att = document.createAttribute("quantity");
+		att.value = quantity;
+		button.setAttributeNode(att);
+
+		button.setAttribute('onclick','getPurchaseItem(this);');
+		buttonTD.appendChild(button);
+
+		document.getElementById(row.id).appendChild(inputTD);
+		document.getElementById(row.id).appendChild(buttonTD);
+	}
+
+	function removePurchaseButton(row) {
+		var list = document.getElementById(row.id);
+		list.removeChild(list.childNodes[list.childNodes.length-1]);
+		list.removeChild(list.childNodes[list.childNodes.length-1]);
+	}
+</script>
 {% endblock %}
