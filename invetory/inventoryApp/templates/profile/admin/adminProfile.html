@@ -16,9 +16,24 @@
 	<div class="tab-content" id="nav-tabContent">
 		<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
 			{% if productList %}
-				{% for product in productList%}
-					{{ product.product_name }} {{ product.quantity }}
-				{% endfor %}
+			<table class="table table-hover">
+				<thead>
+				  <tr>
+					<th scope="col">Product Id</th>
+					<th scope="col">Name</th>
+					<th scope="col">Available Quantity</th>
+				  </tr>
+				</thead>
+				<tbody>
+			{% for product in productList%}
+					  <tr id= "{{ product.product_id }}" >
+						<td scope="row">{{ product.product_id }}</td>
+						<td>{{ product.product_name }}</td>
+						<td>{{ product.quantity }}</td>
+					  </tr>
+					  {% endfor %}
+					</tbody>
+				  </table>
 			{% endif %}
 		</div>
 
